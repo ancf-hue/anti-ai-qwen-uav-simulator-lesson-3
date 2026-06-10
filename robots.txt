@@ -1,0 +1,48 @@
+# ============================================================
+# Anti-AI Qwen Academy - BПЛА Тренажёр
+# Роботы и правила индексации
+# https://ancf-hue.github.io/
+# ============================================================
+
+# Разрешаем всем поисковым системам индексировать сайт
+User-agent: *
+Allow: /
+Allow: /index.html
+Allow: /*.html$
+Allow: /*.css$
+Allow: /*.js$
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.png$
+Allow: /*.gif$
+Allow: /*.svg$
+Allow: /*.ico$
+Allow: /*.mp3$
+Allow: /*.wav$
+
+# Запрещаем индексацию технических файлов
+Disallow: /favicon.ico
+Disallow: /package.json
+Disallow: /package-lock.json
+Disallow: /.gitignore
+Disallow: /.env
+Disallow: /node_modules/
+Disallow: /_next/
+Disallow: /.vercel/
+Disallow: /*.log$
+Disallow: /*.bak$
+Disallow: /*.tmp$
+
+# Указываем скорость обхода (чтобы не нагружать сервер)
+Crawl-delay: 1
+
+# Карта сайта
+Sitemap: https://anti-ai-qwen-uav-simulator-lesson-1.vercel.app/sitemap.xml
+Sitemap: https://anti-ai-qwen-uav-simulator-lesson-2.vercel.app/sitemap.xml
+Sitemap: https://anti-ai-qwen-uav-simulator-lesson-3.vercel.app/sitemap.xml
+Sitemap: https://ancf-hue.github.io/sitemap.xml
+
+# Хозяин сайта
+# Антон Анатольевич Кузнецов
+# Воронеж, Россия
+# an.cf@yandex.ru
