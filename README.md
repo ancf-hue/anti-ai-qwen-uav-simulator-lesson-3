@@ -1,6 +1,8 @@
 <img width="800" height="600" alt="ai_image" src="https://github.com/user-attachments/assets/7c2ee98f-ecaf-4743-bf1b-71eb4ce73311" />
 
 
+"Бесплатный открытый социальный проект с открытым исходным кодом".
+
 
 # 🐱 Anti-AI Qwen БПЛА Тренажёр — Урок 3: Ночная охота
 
