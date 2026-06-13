@@ -30,6 +30,20 @@ body{ overflow: hidden; font-family:'Segoe UI','Orbitron', monospace; background
 .start-btn:hover{ transform: translateY(-3px); box-shadow: 0 11px 0 #331166, 0 20px 40px rgba(170, 102, 255, 0.8);}
 .start-btn:active{ transform: translateY(5px); box-shadow: 0 3px 0 #331166, 0 8px 15px rgba(170, 102, 255, 0.6);}
 
+#difficulty-page{ position: fixed; inset: 0; background: radial-gradient(ellipse at center,#0a0a2a 0%,#050510 50%,#000005 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 499; transition: opacity 0.8s ease, transform 0.8s ease; overflow-y: auto; padding: 80px 20px 20px;}
+#difficulty-page.hidden{ opacity: 0; pointer-events: none; transform: scale(1.1);}
+.difficulty-title{ font-size: 36px; font-weight: 900; background: linear-gradient(135deg,#ffffff,#aa66ff,#ffaa33); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; text-align: center; letter-spacing: 3px; margin-bottom: 40px;}
+.difficulty-buttons{ display: flex; gap: 30px; flex-wrap: wrap; justify-content: center;}
+.difficulty-btn{ width: 120px; height: 120px; border-radius: 50%; border: 4px solid transparent; cursor: pointer; transition: all 0.3s; box-shadow: 0 8px 30px rgba(0,0,0,0.5); position: relative; overflow: hidden;}
+.difficulty-btn::before{ content:''; position: absolute; inset: 0; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.3), transparent 50%); border-radius: 50%;}
+.difficulty-btn:hover{ transform: scale(1.1); box-shadow: 0 12px 40px rgba(0,0,0,0.7);}
+.difficulty-btn:active{ transform: scale(0.95);}
+.difficulty-btn.easy{ background: linear-gradient(135deg, #48bb78, #2f855a); border-color: #68d391;}
+.difficulty-btn.medium{ background: linear-gradient(135deg, #ecc94b, #d69e2e); border-color: #f6e05e;}
+.difficulty-btn.hard{ background: linear-gradient(135deg, #e53e3e, #c53030); border-color: #fc8181;}
+.difficulty-label{ position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); font-size: 14px; font-weight: bold; white-space: nowrap; opacity: 0; transition: opacity 0.3s;}
+.difficulty-btn:hover .difficulty-label{ opacity: 1;}
+
 #simulator-page{ position: fixed; inset: 0; opacity: 0; pointer-events: none; transition: opacity 1s ease; background: radial-gradient(ellipse at top,#0a0a2a 0%,#050510 50%, #000005 100%);}
 #simulator-page.active{ opacity: 1; pointer-events: all;}
 #simulator-page::before{ content:''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-image: radial-gradient(2px 2px at 20% 30%, white, transparent), radial-gradient(1px 1px at 60% 70%, white, transparent), radial-gradient(1px 1px at 50% 50%,#ccbbff, transparent), radial-gradient(2px 2px at 80% 10%, white, transparent); background-size: 200% 200%; opacity: 0.4; pointer-events: none; z-index: 2; animation: twinkle 8s linear infinite;}
@@ -112,6 +126,8 @@ body{ overflow: hidden; font-family:'Segoe UI','Orbitron', monospace; background
  .intro-title{ font-size: 28px;}
  .intro-subtitle{ font-size: 14px;}
  .start-btn{ padding: 14px 40px; font-size: 16px;}
+ .difficulty-title{ font-size: 28px;}
+ .difficulty-btn{ width: 100px; height: 100px;}
  .victory-content{ padding: 30px;}
  .victory-content h2{ font-size: 32px;}
  #resetDroneBtn, #exitMenuBtn{ bottom: 100px; padding: 8px 20px; font-size: 12px;}
@@ -135,12 +151,26 @@ body{ overflow: hidden; font-family:'Segoe UI','Orbitron', monospace; background
   <h1 class="intro-title">ОПЕРАТОР КОТ</h1>
   <div class="intro-subtitle">Qwen · БПЛА ТРЕНАЖЁР · УРОК 3</div>
   <div class="intro-desc">
-    Ночная скрытная охота. Оператор "КОТ" должен бесшумно подкрасться к 5 целям
-    и захватить их, удерживая прицел 1.5 секунды. Следите за индикатором шума —
+    Ночная скрытная охота. Оператор "КОТ" должен бесшумно подкрасться к целям
+    и захватить их, удерживая прицел. Следите за индикатором шума —
     при высокой скорости цели разбегаются! Клавиша <b>T</b> — переключение тепловизора.
-    У вас <b>3 минуты</b> на выполнение миссии!
   </div>
   <button class="start-btn" id="startBtn">НАЧАТЬ ОХОТУ</button>
+</div>
+
+<div id="difficulty-page" class="hidden">
+  <h2 class="difficulty-title">ВЫБЕРИТЕ СЛОЖНОСТЬ</h2>
+  <div class="difficulty-buttons">
+    <button class="difficulty-btn easy" data-difficulty="easy">
+      <span class="difficulty-label">🟢 Лёгкий</span>
+    </button>
+    <button class="difficulty-btn medium" data-difficulty="medium">
+      <span class="difficulty-label">🟡 Средний</span>
+    </button>
+    <button class="difficulty-btn hard" data-difficulty="hard">
+      <span class="difficulty-label">🔴 Сложный</span>
+    </button>
+  </div>
 </div>
 
 <div id="simulator-page">
@@ -170,8 +200,8 @@ body{ overflow: hidden; font-family:'Segoe UI','Orbitron', monospace; background
 
   <div id="target-panel">
     🎯 ЗАХВАТИТЬ ЦЕЛИ<br>
-    <span id="target-counter">0</span> / 5<br>
-    <span style="font-size:11px;">🎯 Удерживай прицел 1.5с</span>
+    <span id="target-counter">0</span> / <span id="target-total">5</span><br>
+    <span id="capture-hint" style="font-size:11px;">🎯 Удерживай прицел 1.5с</span>
   </div>
 
   <div id="mode-indicator">
@@ -190,7 +220,7 @@ body{ overflow: hidden; font-family:'Segoe UI','Orbitron', monospace; background
     🤫 Тише лети — мыши не убегут!
   </div>
 
-  <div class="lesson-badge">📡 ЗАДАНИЕ: Захватить 5 целей за 3 минуты</div>
+  <div class="lesson-badge" id="lessonBadge">📡 ЗАДАНИЕ: Захватить 5 целей за 3 мин</div>
 
   <button id="resetDroneBtn">🔄 Перезапустить</button>
   <button id="exitMenuBtn">🚪 Выйти в меню</button>
@@ -218,7 +248,7 @@ body{ overflow: hidden; font-family:'Segoe UI','Orbitron', monospace; background
     <h2>🏆 ОХОТА ЗАВЕРШЕНА! 🏆</h2>
     <p>Отличная работа, оператор "КОТ"!<br>Все цели захвачены!</p>
     <div class="victory-stats">
-      Захвачено: <span id="victoryHits">5</span>/5 🎯<br>
+      Захвачено: <span id="victoryHits">5</span>/<span id="victoryTotal">5</span> 🎯<br>
       Средний шум: <span id="victoryNoise">0</span>% 🔊<br>
       Время: <span id="victoryTime">0</span>с ⏱️
     </div>
@@ -234,10 +264,44 @@ body{ overflow: hidden; font-family:'Segoe UI','Orbitron', monospace; background
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-// ✅ ИСПРАВЛЕНИЕ №2: Добавлен MISSION_TIME
-const CONFIG = {
-  DRONE_SPEED: 0.08,
-  DRONE_DRAG: 0.94,
+// ✅ КОНФИГУРАЦИЯ УРОВНЕЙ СЛОЖНОСТИ
+const DIFFICULTY_CONFIG = {
+  easy: {
+    DRONE_SPEED: 0.10,
+    DRONE_DRAG: 0.96,
+    TARGET_SPEED: 0.03,
+    TARGET_FLEE_SPEED: 0.08,
+    TARGET_FLEE_RADIUS: 5,
+    CAPTURE_TIME: 1200,
+    NOISE_THRESHOLD: 70,
+    TARGET_COUNT: 3,
+    MISSION_TIME: 240
+  },
+  medium: {
+    DRONE_SPEED: 0.08,
+    DRONE_DRAG: 0.94,
+    TARGET_SPEED: 0.04,
+    TARGET_FLEE_SPEED: 0.12,
+    TARGET_FLEE_RADIUS: 6,
+    CAPTURE_TIME: 1500,
+    NOISE_THRESHOLD: 60,
+    TARGET_COUNT: 5,
+    MISSION_TIME: 180
+  },
+  hard: {
+    DRONE_SPEED: 0.06,
+    DRONE_DRAG: 0.92,
+    TARGET_SPEED: 0.06,
+    TARGET_FLEE_SPEED: 0.18,
+    TARGET_FLEE_RADIUS: 8,
+    CAPTURE_TIME: 2000,
+    NOISE_THRESHOLD: 40,
+    TARGET_COUNT: 7,
+    MISSION_TIME: 150
+  }
+};
+
+const BASE_CONFIG = {
   MAX_TILT: 0.35,
   DRONE_HOVER_Y: 1.25,
   DRONE_HOVER_AMP: 0.025,
@@ -251,20 +315,16 @@ const CONFIG = {
   GROUND_Y: -0.45,
   GRAVITY: 0.015,
   BOUNCE_FACTOR: 0.5,
-  TARGET_COUNT: 5,
   CAMERA_OFFSET: { x: -4.5, y: 3.2, z: 6 },
   CAMERA_LERP: 0.09,
   LOW_END_CORES: 4,
   MAX_PIXEL_RATIO: 2,
-  CAPTURE_TIME: 1500,
-  NOISE_THRESHOLD: 60,
-  TARGET_SPEED: 0.04,
-  TARGET_FLEE_SPEED: 0.12,
-  TARGET_FLEE_RADIUS: 6,
   CAPTURE_RADIUS: 4,
-  TRAIL_LENGTH: 15,
-  MISSION_TIME: 180  // ✅ 3 минуты на миссию
+  TRAIL_LENGTH: 15
 };
+
+let CONFIG = { ...BASE_CONFIG, ...DIFFICULTY_CONFIG.medium };
+let currentDifficulty = 'medium';
 
 const state = {
   keys: {},
@@ -289,9 +349,9 @@ const state = {
   noiseSamples: 0,
   isRestarting: false,
   isPaused: false,
-  timeLeft: CONFIG.MISSION_TIME,  // ✅ Добавлено
-  timerInterval: null,             // ✅ Добавлено
-  missionStartTime: 0              // ✅ Добавлено
+  timeLeft: CONFIG.MISSION_TIME,
+  timerInterval: null,
+  missionStartTime: 0
 };
 
 let scene, camera, renderer, droneGroup;
@@ -303,7 +363,7 @@ let isLowEnd = false;
 let activeAnimations = [];
 
 const sharedGeometries = {
-  ring: new THREE.RingGeometry(0.1, 0.2, 32)  // ✅ Только ring, flash удалён
+  ring: new THREE.RingGeometry(0.1, 0.2, 32)
 };
 
 function checkWebGL(){
@@ -363,19 +423,73 @@ async function startAudio(){
   }
 }
 
-document.getElementById('startBtn').addEventListener('click', startSimulator);
-async function startSimulator(){
-  await startAudio();
+document.getElementById('startBtn').addEventListener('click', () => {
+  startAudio();
   document.getElementById('intro-page').classList.add('hidden');
+  setTimeout(() => {
+    document.getElementById('difficulty-page').classList.remove('hidden');
+  }, 800);
+});
+
+document.querySelectorAll('.difficulty-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    startAudio();
+    const difficulty = btn.dataset.difficulty;
+    selectDifficulty(difficulty);
+  });
+});
+
+function updateUIForDifficulty(){
+  const targetTotal = document.getElementById('target-total');
+  if(targetTotal) targetTotal.innerText = CONFIG.TARGET_COUNT;
+  
+  const captureHint = document.getElementById('capture-hint');
+  if(captureHint) captureHint.innerText = `🎯 Удерживай прицел ${CONFIG.CAPTURE_TIME/1000}с`;
+  
+  const lessonBadge = document.getElementById('lessonBadge');
+  if(lessonBadge){
+    const minutes = Math.floor(CONFIG.MISSION_TIME / 60);
+    const sec = CONFIG.MISSION_TIME % 60;
+    const timeStr = sec > 0 ? `${minutes} мин ${sec} с` : `${minutes} мин`;
+    lessonBadge.innerText = `📡 ЗАДАНИЕ: Захватить ${CONFIG.TARGET_COUNT} целей за ${timeStr}`;
+  }
+  
+  const victoryTotal = document.getElementById('victoryTotal');
+  if(victoryTotal) victoryTotal.innerText = CONFIG.TARGET_COUNT;
+}
+
+function selectDifficulty(difficulty){
+  currentDifficulty = difficulty;
+  CONFIG = { ...BASE_CONFIG, ...DIFFICULTY_CONFIG[difficulty] };
+  state.timeLeft = CONFIG.MISSION_TIME;
+  
+  updateUIForDifficulty();
+  
+  document.getElementById('difficulty-page').classList.add('hidden');
   setTimeout(() => {
     document.getElementById('simulator-page').classList.add('active');
     if(!state.simulatorInitialized) initSimulator();
     else fullGameRestart();
-    startMissionTimer();  // ✅ Запуск таймера
   }, 800);
 }
 
-// ✅ ИСПРАВЛЕНИЕ №7: Сброс тепловизора при выходе
+function resetThermalMode(){
+  if(!state.thermalMode) return;
+  state.thermalMode = false;
+  if(renderer && renderer.domElement) renderer.domElement.style.filter = '';
+  document.getElementById('mode-text').innerText = 'ОБЫЧНЫЙ';
+  document.getElementById('mode-text').style.color = '#ccbbee';
+  if(scene && scene.fog) scene.fog.color.setHex(0x020510);
+  if(renderer) renderer.toneMappingExposure = 0.8;
+  targets.forEach(t => {
+    if(t.bodyMat){
+      t.bodyMat.emissiveIntensity = 0.3;
+      t.bodyMat.emissive.setHex(0x222222);
+      t.bodyMat.color.setHex(0x888888);
+    }
+  });
+}
+
 function exitToMenu(){
   if(state.animationId){
     cancelAnimationFrame(state.animationId);
@@ -385,24 +499,11 @@ function exitToMenu(){
     clearInterval(state.timerInterval);
     state.timerInterval = null;
   }
-  // Сброс тепловизора
-  if(state.thermalMode){
-    state.thermalMode = false;
-    document.body.style.filter = '';
-    scene.fog.color.setHex(0x020510);
-    renderer.toneMappingExposure = 0.8;
-    targets.forEach(t => {
-      if(t.body && t.body.material){
-        t.body.material.emissiveIntensity = 0.3;
-        t.body.material.color.setHex(0x888888);
-      }
-    });
-  }
+  resetThermalMode();
   document.getElementById('victoryModal').classList.remove('show');
   document.getElementById('simulator-page').classList.remove('active');
   setTimeout(() => {
     document.getElementById('intro-page').classList.remove('hidden');
-    if(!state.animationId) animate(performance.now());
   }, 300);
   const music = document.getElementById('bg-music');
   music.pause();
@@ -475,8 +576,10 @@ function showNotification(text, type = ''){
   const n = document.getElementById('notification');
   if(!n || lastNotifText === text) return;
   lastNotifText = text;
+  
   n.innerText = text;
   n.className = 'show ' + type;
+  
   if(notifTimeout) clearTimeout(notifTimeout);
   notifTimeout = setTimeout(() => {
     n.className = '';
@@ -484,7 +587,6 @@ function showNotification(text, type = ''){
   }, 2500);
 }
 
-// ✅ ИСПРАВЛЕНИЕ №6: Остановка дрона после победы
 function showVictoryModal(){
   if(state.gameCompleted) return;
   state.gameCompleted = true;
@@ -492,7 +594,6 @@ function showVictoryModal(){
     clearInterval(state.timerInterval);
     state.timerInterval = null;
   }
-  // ✅ Остановка дрона
   state.velocity = { x: 0, z: 0 };
   state.verticalVelocity = 0;
   
@@ -510,7 +611,31 @@ function clearActiveAnimations(){
   activeAnimations = [];
 }
 
-// ✅ ИСПРАВЛЕНИЕ №7: Сброс тепловизора при рестарте
+function rebuildTargets() {
+  targets.forEach(t => {
+    if (t && t.group) {
+      scene.remove(t.group);
+      t.group.traverse(obj => {
+        if (obj.geometry) obj.geometry.dispose();
+        if (obj.material) {
+          if (Array.isArray(obj.material)) 
+            obj.material.forEach(m => m.dispose());
+          else obj.material.dispose();
+        }
+      });
+    }
+  });
+  targets = [];
+  
+  const startPos = [
+    [-6, -6], [7, -4], [-5, 7], [8, 6], [0, -9], [-8, 2], [5, -8]
+  ];
+  for(let i = 0; i < CONFIG.TARGET_COUNT; i++){
+    const pos = startPos[i];
+    targets.push(new MouseTarget(scene, pos[0], pos[1]));
+  }
+}
+
 function fullGameRestart(){
   if(state.isRestarting) return;
   state.isRestarting = true;
@@ -529,21 +654,7 @@ function fullGameRestart(){
   state.avgNoise = 0;
   state.noiseSamples = 0;
   
-  // ✅ Сброс тепловизора
-  if(state.thermalMode){
-    state.thermalMode = false;
-    document.body.style.filter = '';
-    document.getElementById('mode-text').innerText = 'ОБЫЧНЫЙ';
-    document.getElementById('mode-text').style.color = '#ccbbee';
-    scene.fog.color.setHex(0x020510);
-    renderer.toneMappingExposure = 0.8;
-    targets.forEach(t => {
-      if(t.body && t.body.material){
-        t.body.material.emissiveIntensity = 0.3;
-        t.body.material.color.setHex(0x888888);
-      }
-    });
-  }
+  resetThermalMode();
 
   document.getElementById('hits').innerText = '0';
   document.getElementById('target-counter').innerText = '0';
@@ -557,9 +668,7 @@ function fullGameRestart(){
     droneGroup.rotation.set(0, 0, 0);
   }
 
-  for(let t of targets){
-    if(t && typeof t.reset === 'function') t.reset();
-  }
+  rebuildTargets();
 
   trailParticles.forEach(p => {
     p.visible = false;
@@ -570,19 +679,16 @@ function fullGameRestart(){
   clearActiveAnimations();
   showNotification("🔄 Охота перезапущена! Будь тише, КОТ 🐱", 'success');
   
-  // ✅ Перезапуск таймера
   startMissionTimer();
   
   setTimeout(() => { state.isRestarting = false; }, 500);
 }
 
-// ✅ ИСПРАВЛЕНИЕ №8: clearActiveAnimations в resetExercise
 function resetExercise(){
   if(state.gameCompleted){ fullGameRestart(); return; }
   fullGameRestart();
 }
 
-// ✅ ИСПРАВЛЕНИЕ №2, №3: Функция таймера миссии
 function startMissionTimer(){
   if(state.timerInterval) clearInterval(state.timerInterval);
   state.timeLeft = CONFIG.MISSION_TIME;
@@ -592,11 +698,10 @@ function startMissionTimer(){
   if(timerElem) timerElem.innerText = state.timeLeft;
   
   state.timerInterval = setInterval(() => {
-    if(state.isCrashed || state.gameCompleted) return;
+    if(state.isCrashed || state.gameCompleted || state.isPaused) return;
     state.timeLeft--;
     if(timerElem) timerElem.innerText = state.timeLeft;
     
-    // Предупреждение за 30 секунд
     if(state.timeLeft === 30){
       showNotification("⏰ Осталось 30 секунд!", 'info');
     }
@@ -609,6 +714,7 @@ function startMissionTimer(){
       state.timerInterval = null;
       showNotification("⏰ ВРЕМЯ ВЫШЛО! Миссия провалена.", 'hit');
       state.isCrashed = true;
+      state.verticalVelocity = -0.05;
       SFX.crash();
     }
   }, 1000);
@@ -625,15 +731,21 @@ function initSimulator(){
     return;
   }
 
-  setupScene();
-  setupLights();
-  setupFloor();
-  setupEnvironment();
-  setupDrone();
-  setupTrail();
-  setupTargets();
-  setupEventListeners();
-  state.simulatorInitialized = true;
+  try {
+    setupScene();
+    setupLights();
+    setupFloor();
+    setupEnvironment();
+    setupDrone();
+    setupTrail();
+    setupTargets();
+    setupEventListeners();
+    state.simulatorInitialized = true;
+  } catch(e) {
+    console.error('❌ Ошибка инициализации:', e);
+    document.getElementById('webgl-error').classList.add('show');
+    return;
+  }
 
   setTimeout(() => {
     if(!audioCtx || audioCtx.state === 'suspended'){
@@ -645,6 +757,7 @@ function initSimulator(){
   }, 1500);
 
   animate(performance.now());
+  startMissionTimer();
   console.log('✅ Урок 3 запущен. Оператор КОТ — к охоте!');
 }
 
@@ -847,155 +960,154 @@ function setupTrail(){
   }
 }
 
-function setupTargets(){
-  class MouseTarget{
-    constructor(scene, x, z){
-      this.group = new THREE.Group();
-      this.startX = x;
-      this.startZ = z;
-      this.active = false;
-      this.captured = false;
-      this.fleeing = false;
-      this.velocity = { x: 0, z: 0 };
-      this.directionChangeTimer = 0;
-      this.targetDir = { x: 0, z: 0 };
+class MouseTarget{
+  constructor(scene, x, z){
+    this.group = new THREE.Group();
+    this.startX = x;
+    this.startZ = z;
+    this.active = false;
+    this.captured = false;
+    this.fleeing = false;
+    this.velocity = { x: 0, z: 0 };
+    this.directionChangeTimer = 0;
+    this.targetDir = { x: 0, z: 0 };
 
-      // ✅ Материал тела сохраняется для тепловизора
-      this.bodyMat = new THREE.MeshStandardMaterial({
-        color: 0x888888, roughness: 0.7, metalness: 0.2,
-        emissive: 0x222222, emissiveIntensity: 0.3
-      });
-      
-      const body = new THREE.Mesh(
-        new THREE.SphereGeometry(0.2, 12, 8),
-        this.bodyMat
-      );
-      body.scale.set(1, 0.7, 1.4);
-      body.position.y = 0;
-      if(!isLowEnd) body.castShadow = true;
-      this.group.add(body);
-      this.body = body;
+    this.bodyMat = new THREE.MeshStandardMaterial({
+      color: 0x888888, roughness: 0.7, metalness: 0.2,
+      emissive: 0x222222, emissiveIntensity: 0.3
+    });
+    
+    const body = new THREE.Mesh(
+      new THREE.SphereGeometry(0.2, 12, 8),
+      this.bodyMat
+    );
+    body.scale.set(1, 0.7, 1.4);
+    body.position.y = 0;
+    if(!isLowEnd) body.castShadow = true;
+    this.group.add(body);
+    this.body = body;
 
-      const head = new THREE.Mesh(
-        new THREE.SphereGeometry(0.13, 10, 8),
-        this.bodyMat
-      );
-      head.position.set(0, 0.02, 0.22);
-      this.group.add(head);
+    const head = new THREE.Mesh(
+      new THREE.SphereGeometry(0.13, 10, 8),
+      this.bodyMat
+    );
+    head.position.set(0, 0.02, 0.22);
+    this.group.add(head);
 
-      const earMat = new THREE.MeshStandardMaterial({ color: 0xffaaaa, roughness: 0.5 });
-      const earGeo = new THREE.SphereGeometry(0.05, 8, 6);
-      const earL = new THREE.Mesh(earGeo, earMat);
-      earL.position.set(-0.08, 0.1, 0.22);
-      this.group.add(earL);
-      const earR = new THREE.Mesh(earGeo, earMat);
-      earR.position.set(0.08, 0.1, 0.22);
-      this.group.add(earR);
+    const earMat = new THREE.MeshStandardMaterial({ color: 0xffaaaa, roughness: 0.5 });
+    const earGeo = new THREE.SphereGeometry(0.05, 8, 6);
+    const earL = new THREE.Mesh(earGeo, earMat);
+    earL.position.set(-0.08, 0.1, 0.22);
+    this.group.add(earL);
+    const earR = new THREE.Mesh(earGeo, earMat);
+    earR.position.set(0.08, 0.1, 0.22);
+    this.group.add(earR);
 
-      const eyeMat = new THREE.MeshBasicMaterial({ color: 0xff3333 });
-      const eyeGeo = new THREE.SphereGeometry(0.02, 6, 6);
-      const eyeL = new THREE.Mesh(eyeGeo, eyeMat);
-      eyeL.position.set(-0.05, 0.05, 0.32);
-      this.group.add(eyeL);
-      const eyeR = new THREE.Mesh(eyeGeo, eyeMat);
-      eyeR.position.set(0.05, 0.05, 0.32);
-      this.group.add(eyeR);
+    const eyeMat = new THREE.MeshBasicMaterial({ color: 0xff3333 });
+    const eyeGeo = new THREE.SphereGeometry(0.02, 6, 6);
+    const eyeL = new THREE.Mesh(eyeGeo, eyeMat);
+    eyeL.position.set(-0.05, 0.05, 0.32);
+    this.group.add(eyeL);
+    const eyeR = new THREE.Mesh(eyeGeo, eyeMat);
+    eyeR.position.set(0.05, 0.05, 0.32);
+    this.group.add(eyeR);
 
-      const tailMat = new THREE.MeshStandardMaterial({ color: 0xffaaaa, roughness: 0.5 });
-      const tail = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.015, 0.01, 0.3, 6),
-        tailMat
-      );
-      tail.position.set(0, 0.02, -0.25);
-      tail.rotation.x = Math.PI / 2;
-      this.group.add(tail);
+    const tailMat = new THREE.MeshStandardMaterial({ color: 0xffaaaa, roughness: 0.5 });
+    const tail = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.015, 0.01, 0.3, 6),
+      tailMat
+    );
+    tail.position.set(0, 0.02, -0.25);
+    tail.rotation.x = Math.PI / 2;
+    this.group.add(tail);
 
-      this.thermalGlow = new THREE.PointLight(0xff6600, 0, 2);
-      this.thermalGlow.position.set(0, 0.1, 0);
-      this.group.add(this.thermalGlow);
+    this.thermalGlow = new THREE.PointLight(0xff6600, 0, 2);
+    this.thermalGlow.position.set(0, 0.1, 0);
+    this.group.add(this.thermalGlow);
 
-      this.group.position.set(x, -0.3, z);
-      scene.add(this.group);
-      this.reset();
-    }
-
-    update(dronePos, noiseLevel){
-      if(!this.active || this.captured) return;
-
-      const dx = dronePos.x - this.group.position.x;
-      const dz = dronePos.z - this.group.position.z;
-      const distToDrone = Math.sqrt(dx * dx + dz * dz);
-
-      if(distToDrone < CONFIG.TARGET_FLEE_RADIUS && noiseLevel > CONFIG.NOISE_THRESHOLD){
-        if(!this.fleeing){
-          this.fleeing = true;
-          SFX.flee();
-        }
-        const fleeX = -dx / distToDrone;
-        const fleeZ = -dz / distToDrone;
-        this.velocity.x = fleeX * CONFIG.TARGET_FLEE_SPEED;
-        this.velocity.z = fleeZ * CONFIG.TARGET_FLEE_SPEED;
-        this.thermalGlow.intensity = 1.5;
-      } else {
-        this.fleeing = false;
-        this.thermalGlow.intensity = 0.5;
-
-        this.directionChangeTimer--;
-        if(this.directionChangeTimer <= 0){
-          const angle = Math.random() * Math.PI * 2;
-          this.targetDir.x = Math.cos(angle);
-          this.targetDir.z = Math.sin(angle);
-          this.directionChangeTimer = 60 + Math.random() * 120;
-        }
-        this.velocity.x += (this.targetDir.x * CONFIG.TARGET_SPEED - this.velocity.x) * 0.05;
-        this.velocity.z += (this.targetDir.z * CONFIG.TARGET_SPEED - this.velocity.z) * 0.05;
-      }
-
-      this.group.position.x += this.velocity.x;
-      this.group.position.z += this.velocity.z;
-
-      if(this.group.position.x > 11){ this.group.position.x = 11; this.velocity.x *= -1; this.targetDir.x *= -1; }
-      if(this.group.position.x < -11){ this.group.position.x = -11; this.velocity.x *= -1; this.targetDir.x *= -1; }
-      if(this.group.position.z > 11){ this.group.position.z = 11; this.velocity.z *= -1; this.targetDir.z *= -1; }
-      if(this.group.position.z < -11){ this.group.position.z = -11; this.velocity.z *= -1; this.targetDir.z *= -1; }
-
-      if(Math.abs(this.velocity.x) > 0.001 || Math.abs(this.velocity.z) > 0.001){
-        const targetAngle = Math.atan2(this.velocity.x, this.velocity.z);
-        this.group.rotation.y += (targetAngle - this.group.rotation.y) * 0.1;
-      }
-
-      const speed = Math.sqrt(this.velocity.x * this.velocity.x + this.velocity.z * this.velocity.z);
-      this.body.position.y = Math.sin(Date.now() * 0.02 * (speed * 10 + 1)) * 0.02;
-    }
-
-    capture(){
-      if(!this.active || this.captured) return false;
-      this.captured = true;
-      this.active = false;
-      this.group.visible = false;
-      return true;
-    }
-
-    reset(){
-      this.active = true;
-      this.captured = false;
-      this.fleeing = false;
-      this.group.visible = true;
-      this.group.position.set(this.startX, -0.3, this.startZ);
-      this.velocity = { x: 0, z: 0 };
-      this.directionChangeTimer = 0;
-    }
-
-    isInCaptureZone(dronePos){
-      if(!this.active || this.captured) return false;
-      const dx = dronePos.x - this.group.position.x;
-      const dz = dronePos.z - this.group.position.z;
-      return Math.sqrt(dx * dx + dz * dz) < CONFIG.CAPTURE_RADIUS;
-    }
+    this.group.position.set(x, -0.3, z);
+    scene.add(this.group);
+    this.reset();
   }
 
+  update(dronePos, noiseLevel){
+    if(!this.active || this.captured) return;
+
+    const dx = dronePos.x - this.group.position.x;
+    const dz = dronePos.z - this.group.position.z;
+    const distToDrone = Math.sqrt(dx * dx + dz * dz);
+
+    if(distToDrone < CONFIG.TARGET_FLEE_RADIUS && noiseLevel > CONFIG.NOISE_THRESHOLD){
+      if(!this.fleeing){
+        this.fleeing = true;
+        SFX.flee();
+      }
+      const fleeX = -dx / distToDrone;
+      const fleeZ = -dz / distToDrone;
+      this.velocity.x = fleeX * CONFIG.TARGET_FLEE_SPEED;
+      this.velocity.z = fleeZ * CONFIG.TARGET_FLEE_SPEED;
+      this.thermalGlow.intensity = 1.5;
+    } else {
+      this.fleeing = false;
+      this.thermalGlow.intensity = 0.5;
+
+      this.directionChangeTimer--;
+      if(this.directionChangeTimer <= 0){
+        const angle = Math.random() * Math.PI * 2;
+        this.targetDir.x = Math.cos(angle);
+        this.targetDir.z = Math.sin(angle);
+        this.directionChangeTimer = 60 + Math.random() * 120;
+      }
+      this.velocity.x += (this.targetDir.x * CONFIG.TARGET_SPEED - this.velocity.x) * 0.05;
+      this.velocity.z += (this.targetDir.z * CONFIG.TARGET_SPEED - this.velocity.z) * 0.05;
+    }
+
+    this.group.position.x += this.velocity.x;
+    this.group.position.z += this.velocity.z;
+
+    if(this.group.position.x > 11){ this.group.position.x = 11; this.velocity.x *= -1; this.targetDir.x *= -1; }
+    if(this.group.position.x < -11){ this.group.position.x = -11; this.velocity.x *= -1; this.targetDir.x *= -1; }
+    if(this.group.position.z > 11){ this.group.position.z = 11; this.velocity.z *= -1; this.targetDir.z *= -1; }
+    if(this.group.position.z < -11){ this.group.position.z = -11; this.velocity.z *= -1; this.targetDir.z *= -1; }
+
+    if(Math.abs(this.velocity.x) > 0.001 || Math.abs(this.velocity.z) > 0.001){
+      const targetAngle = Math.atan2(this.velocity.x, this.velocity.z);
+      this.group.rotation.y += (targetAngle - this.group.rotation.y) * 0.1;
+    }
+
+    const speed = Math.sqrt(this.velocity.x * this.velocity.x + this.velocity.z * this.velocity.z);
+    this.body.position.y = Math.sin(Date.now() * 0.02 * (speed * 10 + 1)) * 0.02;
+  }
+
+  capture(){
+    if(!this.active || this.captured) return false;
+    this.captured = true;
+    this.active = false;
+    this.group.visible = false;
+    return true;
+  }
+
+  reset(){
+    this.active = true;
+    this.captured = false;
+    this.fleeing = false;
+    this.group.visible = true;
+    this.group.position.set(this.startX, -0.3, this.startZ);
+    this.velocity = { x: 0, z: 0 };
+    this.directionChangeTimer = 0;
+  }
+
+  isInCaptureZone(dronePos){
+    if(!this.active || this.captured) return false;
+    const dx = dronePos.x - this.group.position.x;
+    const dz = dronePos.z - this.group.position.z;
+    return Math.sqrt(dx * dx + dz * dz) < CONFIG.CAPTURE_RADIUS;
+  }
+}
+
+function setupTargets(){
   const startPos = [
-    [-6, -6], [7, -4], [-5, 7], [8, 6], [0, -9]
+    [-6, -6], [7, -4], [-5, 7], [8, 6], [0, -9], [-8, 2], [5, -8]
   ];
   for(let i = 0; i < CONFIG.TARGET_COUNT; i++){
     const pos = startPos[i];
@@ -1003,38 +1115,45 @@ function setupTargets(){
   }
 }
 
+// ✅ ИСПРАВЛЕНИЕ: Сила удара считается ПО СКОРОСТИ ДО ОТРАЖЕНИЯ
 function applyCollision(){
   const pos = droneGroup.position;
   let collided = false;
-  let impactForce = 0;
+  
+  // ✅ КРИТИЧЕСКИ ВАЖНО: Сохраняем скорость ДО отражения
+  const preImpactVx = state.velocity.x;
+  const preImpactVz = state.velocity.z;
 
   if(pos.x > CONFIG.LIMIT_X){
-    impactForce = Math.max(impactForce, Math.abs(state.velocity.x));
     pos.x = CONFIG.LIMIT_X;
     state.velocity.x = -Math.abs(state.velocity.x) * CONFIG.BOUNCE_FACTOR;
     collided = true;
   }
   if(pos.x < CONFIG.MIN_X){
-    impactForce = Math.max(impactForce, Math.abs(state.velocity.x));
     pos.x = CONFIG.MIN_X;
     state.velocity.x = Math.abs(state.velocity.x) * CONFIG.BOUNCE_FACTOR;
     collided = true;
   }
   if(pos.z > CONFIG.LIMIT_Z){
-    impactForce = Math.max(impactForce, Math.abs(state.velocity.z));
     pos.z = CONFIG.LIMIT_Z;
     state.velocity.z = -Math.abs(state.velocity.z) * CONFIG.BOUNCE_FACTOR;
     collided = true;
   }
   if(pos.z < CONFIG.MIN_Z){
-    impactForce = Math.max(impactForce, Math.abs(state.velocity.z));
     pos.z = CONFIG.MIN_Z;
     state.velocity.z = Math.abs(state.velocity.z) * CONFIG.BOUNCE_FACTOR;
     collided = true;
   }
 
-  if(collided && impactForce > CONFIG.COLLISION_FORCE_THRESHOLD){
-    triggerCollisionEffect(impactForce);
+  if(collided){
+    // ✅ ИСПРАВЛЕНИЕ: Считаем силу удара по скорости ДО отражения
+    const impactForce = Math.sqrt(
+      preImpactVx * preImpactVx + 
+      preImpactVz * preImpactVz
+    );
+    if(impactForce > CONFIG.COLLISION_FORCE_THRESHOLD){
+      triggerCollisionEffect(impactForce);
+    }
   }
 }
 
@@ -1044,7 +1163,11 @@ function triggerCollisionEffect(force){
   setTimeout(() => flash.classList.remove('active'), 150);
   if(force >= CONFIG.CRASH_FORCE_THRESHOLD && !state.isCrashed){
     state.isCrashed = true;
-    state.verticalVelocity = 0;
+    state.verticalVelocity = -0.05;
+    if(state.timerInterval){
+      clearInterval(state.timerInterval);
+      state.timerInterval = null;
+    }
     showNotification("💥 КРУШЕНИЕ! КОТ разбился!", 'hit');
     SFX.crash();
   } else if(!state.isCrashed){
@@ -1057,53 +1180,44 @@ function handleKeyDown(e){
   state.keys[e.key] = true;
   if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)) e.preventDefault();
   
+  ensureAudio();
+  startAudio();
+  
   if((e.key === 't' || e.key === 'T' || e.key === 'е' || e.key === 'Е') && !state.isCrashed && !state.gameCompleted){
     toggleThermalMode();
   }
-  ensureAudio();
 }
 
 function handleKeyUp(e){ state.keys[e.key] = false; }
 
 function handleMouseDown(e){
-  if(e.target.tagName === 'BUTTON' || e.target.closest('button')) return;
-  state.mouseDown = true;
   ensureAudio();
   startAudio();
+  
+  if(e.target.tagName === 'BUTTON' || e.target.closest('button')) return;
+  state.mouseDown = true;
 }
 function handleMouseUp(){ state.mouseDown = false; }
 
-// ✅ ИСПРАВЛЕНИЕ №5: Подсветка целей в тепловизоре
 function toggleThermalMode(){
   state.thermalMode = !state.thermalMode;
   if(state.thermalMode){
-    document.body.style.filter = 'hue-rotate(-30deg) saturate(1.5) contrast(1.2) brightness(0.9)';
+    if(renderer && renderer.domElement) {
+      renderer.domElement.style.filter = 'hue-rotate(-30deg) saturate(1.5) contrast(1.2) brightness(0.9)';
+    }
     document.getElementById('mode-text').innerText = 'ТЕПЛОВИЗОР 🌡️';
     document.getElementById('mode-text').style.color = '#ff6600';
     scene.fog.color.setHex(0x1a0a00);
     renderer.toneMappingExposure = 0.6;
-    // ✅ Подсветка целей
     targets.forEach(t => {
-      if(t.body && t.bodyMat){
+      if(t.bodyMat){
         t.bodyMat.emissiveIntensity = 0.8;
         t.bodyMat.emissive.setHex(0xff4400);
         t.bodyMat.color.setHex(0xff4400);
       }
     });
   } else {
-    document.body.style.filter = '';
-    document.getElementById('mode-text').innerText = 'ОБЫЧНЫЙ';
-    document.getElementById('mode-text').style.color = '#ccbbee';
-    scene.fog.color.setHex(0x020510);
-    renderer.toneMappingExposure = 0.8;
-    // ✅ Возврат к обычному виду
-    targets.forEach(t => {
-      if(t.body && t.bodyMat){
-        t.bodyMat.emissiveIntensity = 0.3;
-        t.bodyMat.emissive.setHex(0x222222);
-        t.bodyMat.color.setHex(0x888888);
-      }
-    });
+    resetThermalMode();
   }
   SFX.thermal();
   showNotification(state.thermalMode ? "🌡️ Тепловизор ВКЛ" : "👁️ Обычный режим", 'info');
@@ -1246,9 +1360,19 @@ function createCaptureEffect(x, y, z){
 
   let frame = 0;
   let animationId;
+  const animObj = {
+    cancel: () => {
+      if(animationId) cancelAnimationFrame(animationId);
+      scene.remove(ring); ringMat.dispose();
+      const idx = activeAnimations.indexOf(animObj);
+      if(idx !== -1) activeAnimations.splice(idx, 1);
+    }
+  };
+  
   const animateRing = () => {
     if(state.gameCompleted || state.isCrashed){
-      scene.remove(ring); ringMat.dispose(); return;
+      animObj.cancel();
+      return;
     }
     frame++;
     const scale = 1 + frame * 0.3;
@@ -1258,19 +1382,16 @@ function createCaptureEffect(x, y, z){
       animationId = requestAnimationFrame(animateRing);
     } else {
       scene.remove(ring); ringMat.dispose();
+      const idx = activeAnimations.indexOf(animObj);
+      if(idx !== -1) activeAnimations.splice(idx, 1);
     }
   };
   animateRing();
-
-  activeAnimations.push({
-    cancel: () => {
-      if(animationId) cancelAnimationFrame(animationId);
-      scene.remove(ring); ringMat.dispose();
-    }
-  });
+  activeAnimations.push(animObj);
 }
 
 function updateCamera(){
+  if(!droneGroup || !camera) return;
   const targetPos = droneGroup.position.clone();
   const desiredPos = targetPos.clone().add(new THREE.Vector3(
     CONFIG.CAMERA_OFFSET.x, CONFIG.CAMERA_OFFSET.y, CONFIG.CAMERA_OFFSET.z
@@ -1280,11 +1401,13 @@ function updateCamera(){
 }
 
 function updatePropellers(){
+  if(!propellers || propellers.length === 0) return;
   state.propAngle += 0.5;
   propellers.forEach(p => { p.rotation.y = state.propAngle; });
 }
 
 function updateTrail(){
+  if(!trailParticles || trailParticles.length === 0) return;
   state.trailTimer++;
   if(state.trailTimer > 2){
     state.trailTimer = 0;
@@ -1385,6 +1508,7 @@ window.addEventListener('beforeunload', () => {
     });
   }
   if(renderer) renderer.dispose();
+  if(sharedGeometries.ring) sharedGeometries.ring.dispose();
 });
 </script>
 </body>
